@@ -14,33 +14,34 @@ public class Person extends Thread{
 
     }
 
-    public synchronized void buyMilk() throws Exception{
-        
+    public void buyMilk() throws Exception{
+        synchronized(this.fridge){
             if (!this.fridge.gotMilk()) {
                 System.out.println(name + " buying milk...");
                 this.fridge.putMilk();
                 System.out.println(name + " bought milk...");
             }
-        
+        }
     }
 
-    public synchronized void run(){
+    public void run(){
         
-        while(buyingMilk){
+            while(buyingMilk){
 
-            if(this.fridge.gotMilk()){
-                System.out.println(name + " drinking milk...");
-                this.fridge.drinkMilk();
-                System.out.println(name + " drank milk...");
-            }
-            this.fridge.milLock.lock();
-            try {
-                buyMilk();
-            } catch (Exception e) {
-                buyingMilk = false;
-                System.out.println("Too much milk!");
-            }
-            this.fridge.milLock.unlock();
+                if(this.fridge.gotMilk()){
+                    System.out.println(name + " drinking milk...");
+                    this.fridge.drinkMilk();
+                    System.out.println(name + " drank milk...");
+                }
+                
+                try {
+                    buyMilk();
+                } catch (Exception e) {
+                    buyingMilk = false;
+                    System.out.println("Too much milk!");
+                }
+                
+            
         }
     }
 }
